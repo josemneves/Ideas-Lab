@@ -29,8 +29,8 @@ window.PROJECTS = [
     date: "2026-10-11",
     live: "https://recoverylens.vercel.app",
     repo: "", // private for now; add "https://github.com/josemneves/Idea-1" if you make it public
-    image: "", // e.g. "images/recovery-lens.png" (16:10 works best)
-    imageAlt: "", // describe the screenshot, e.g. "Recovery Lens dashboard showing 30-day recovery trend"
+    image: "images/recovery-lens.jpg",
+    imageAlt: "Recovery Lens dashboard with demo data: recovery, HRV, resting heart rate and sleep tiles above a bar chart of daily recovery",
     tags: ["Health", "Data viz", "Privacy"]
   }
 ];
