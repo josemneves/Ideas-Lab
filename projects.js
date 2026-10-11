@@ -4,13 +4,13 @@
 // ─────────────────────────────────────────────────────────────
 
 window.SITE = {
-  name: "Your Name",
+  name: "José Maria",
   tagline: "I build small products to test big ideas.",
   intro:
     "Each project below started as a question I couldn't stop thinking about. " +
     "I build fast, ship in public and write down what the evidence changed.",
   links: {
-    x: "", // e.g. "https://x.com/yourhandle"
+    x: "https://x.com/josemneves_",
     github: "https://github.com/josemneves",
     linkedin: "", // e.g. "https://linkedin.com/in/yourhandle"
     email: "" // optional, e.g. "mailto:you@domain.com"
@@ -20,15 +20,18 @@ window.SITE = {
 // status: "live" | "building" | "prototype" | "paused"
 window.PROJECTS = [
   {
-    name: "Idea 1",
-    pitch: "One sentence that says what it does and for whom.",
-    problem: "The problem you were exploring, in plain words.",
-    learnt: "The most surprising thing you learnt building it.",
-    status: "building",
+    name: "Recovery Lens",
+    pitch: "Turn your WHOOP data export into a clear, visual dashboard, privately in your browser.",
+    problem:
+      "WHOOP lets you export all your data, but it arrives as raw CSV files that are hard to read. " +
+      "Recovery Lens turns them into charts and plain-language takeaways, including which habits " +
+      "actually move your recovery. No account and no upload: everything runs on your device.",
+    learnt: "", // add the most surprising thing you learnt building it
+    status: "live",
     date: "2026-10-11",
-    live: "", // e.g. "https://idea1.yourname.com"
-    repo: "https://github.com/josemneves/Idea-1",
-    image: "", // e.g. "images/idea1.png" (16:10 works best)
-    tags: ["AI", "Web"]
+    live: "https://recoverylens.vercel.app",
+    repo: "", // repo is private; add "https://github.com/josemneves/Idea-1" if you make it public
+    image: "", // e.g. "images/recovery-lens.png" (16:10 works best)
+    tags: ["Health", "Data viz", "Privacy-first"]
   }
 ];
