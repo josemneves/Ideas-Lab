@@ -48,7 +48,10 @@ a:hover { color: var(--accent); text-decoration-thickness: 2px; }
 }
 .mark { font-family: var(--serif); font-size: 22px; font-weight: 700; letter-spacing: -0.01em; text-decoration: none; }
 .mark:hover { color: inherit; }
-.mark .dot { display: inline-block; width: 0.26em; height: 0.26em; margin: 0 0.07em; background: var(--accent); vertical-align: 0; }
+/* The logo's "i": red square dot over an ink stem, sitting on the text baseline */
+.mark .i { width: 0.2em; height: 0.74em; margin-right: 0.05em; vertical-align: baseline; overflow: visible; }
+.mark .i-dot { fill: var(--accent); }
+.mark .i-stem { fill: currentColor; }
 #social { display: flex; gap: var(--s4); font-size: 15px; }
 
 /* Intro */

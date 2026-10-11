@@ -21,3 +21,10 @@ Then open http://localhost:8000.
 - `vercel.json` sets security headers, including a strict Content Security Policy: only this site's own scripts and styles can run, and the page can't be embedded in other sites.
 - Every value from `projects.js` is escaped before it reaches the page, and links must start with `http(s)://`, `mailto:` or be relative.
 - No third-party requests: system fonts only, no analytics, no cookies, no forms. That's why there is no cookie banner or privacy policy to accept.
+
+## Logo
+The symbol is a lowercase "i": a red square dot (the idea) over an ink stem (the work). In the header it is the first letter of "ideas lab".
+- `favicon.svg`: browser tab icon
+- `logo.svg` / `logo.png` (800×800): square version for profile pictures (X, Linktree)
+
+Colours: red `#b3341c`, ink `#161513`, paper `#f4f2ee`.
