@@ -27,5 +27,7 @@ The symbol is a lowercase "i": a red square dot (the idea) over an ink stem (the
 - `favicon.svg`: browser tab icon
 - `logo.svg` / `logo.png` (800×800): square version for profile pictures
 - `logo-thumb.svg` / `logo-thumb.png` (800×800): tighter crop for small thumbnails (Linktree buttons)
+- `logo-thumb-dark.svg` / `logo-thumb-dark.png` (800×800): same on ink, for dark backgrounds
+- `linktree-banner.svg` / `linktree-banner.png` (1600×900): wide banner for Linktree's Featured layout
 
 Colours: red `#b3341c`, ink `#161513`, paper `#f4f2ee`.
