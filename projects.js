@@ -1,14 +1,12 @@
-// ─────────────────────────────────────────────────────────────
 // The only file you need to edit.
-// Add a project = copy one object in PROJECTS and change the fields.
-// ─────────────────────────────────────────────────────────────
+// To add a project, copy one object in PROJECTS and add it at the END of the list.
+// Numbers (01, 02...) follow the order of this list; the page shows the newest first.
 
 window.SITE = {
   name: "José Maria",
-  tagline: "I build small products to test big ideas.",
   intro:
-    "Each project below started as a question I couldn't stop thinking about. " +
-    "I build fast, ship in public and write down what the evidence changed.",
+    "I build small tools around problems I run into, put them online, " +
+    "and write down what I learn. This is the index of everything I have shipped so far.",
   links: {
     x: "https://x.com/josemneves_",
     github: "https://github.com/josemneves",
@@ -21,17 +19,18 @@ window.SITE = {
 window.PROJECTS = [
   {
     name: "Recovery Lens",
-    pitch: "Turn your WHOOP data export into a clear, visual dashboard, privately in your browser.",
+    pitch: "Turns a WHOOP data export into a visual dashboard, without the data leaving your browser.",
     problem:
       "WHOOP lets you export all your data, but it arrives as raw CSV files that are hard to read. " +
       "Recovery Lens turns them into charts and plain-language takeaways, including which habits " +
-      "actually move your recovery. No account and no upload: everything runs on your device.",
-    learnt: "", // add the most surprising thing you learnt building it
+      "change your next-day recovery. There is no account and no upload; everything runs on your device.",
+    learnt: "", // the most surprising thing you learnt building it
     status: "live",
     date: "2026-10-11",
     live: "https://recoverylens.vercel.app",
-    repo: "", // repo is private; add "https://github.com/josemneves/Idea-1" if you make it public
+    repo: "", // private for now; add "https://github.com/josemneves/Idea-1" if you make it public
     image: "", // e.g. "images/recovery-lens.png" (16:10 works best)
-    tags: ["Health", "Data viz", "Privacy-first"]
+    imageAlt: "", // describe the screenshot, e.g. "Recovery Lens dashboard showing 30-day recovery trend"
+    tags: ["Health", "Data viz", "Privacy"]
   }
 ];

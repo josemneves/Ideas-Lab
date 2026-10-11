@@ -3,35 +3,39 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Projects</title>
-  <meta name="description" content="Products and experiments I'm building in public.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <title>Ideas Lab · José Maria</title>
+  <meta name="description" content="An index of the small products José Maria is building in public.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="wrap">
-    <header class="hero">
-      <p class="eyebrow mono">Projects · building in public</p>
-      <h1 id="name"></h1>
-      <p class="tagline" id="tagline"></p>
-      <p class="intro" id="intro"></p>
-      <nav class="social" id="social"></nav>
-    </header>
+  <a class="skip" href="#index">Skip to projects</a>
 
-    <section>
-      <div class="bar">
-        <h2>Projects <span class="count mono" id="count"></span></h2>
-        <div class="filters" id="filters" role="tablist"></div>
-      </div>
-      <div class="grid" id="grid"></div>
+  <header class="top">
+    <a class="mark" href="./">Ideas Lab</a>
+    <nav id="social" aria-label="Profiles"></nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h1 id="name"></h1>
+      <p id="intro"></p>
     </section>
 
-    <footer class="mono">
-      <span id="year"></span> · Built fast, shipped honestly.
-    </footer>
+    <section aria-labelledby="index-title">
+      <div class="index-head">
+        <h2 id="index-title">Index</h2>
+        <span id="count" class="mono"></span>
+      </div>
+      <ol class="index" id="index"></ol>
+    </section>
   </main>
+
+  <footer>
+    <p>This site sets no cookies, runs no analytics and collects no personal data.</p>
+    <p class="mono" id="updated"></p>
+  </footer>
 
   <script src="projects.js"></script>
   <script src="app.js"></script>

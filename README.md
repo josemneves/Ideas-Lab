@@ -1,17 +1,23 @@
-# Projects hub
+# Ideas Lab
 
-A static site that lists everything I'm building. It has no build step and no dependencies.
+An index of the small products I'm building in public. It's a static site with no build step, no dependencies, no cookies and no tracking.
 
 ## Add a project
-Edit `projects.js` and copy one object in `PROJECTS`. Put screenshots in `images/` (16:10 works best).
+Edit `projects.js` and add a new object at the end of `PROJECTS`. Put screenshots in `images/` (16:10 works best) and fill in `imageAlt` with a short description of the screenshot.
 
 Status values: `live`, `building`, `prototype`, `paused`.
 
 ## Run locally
-Open `index.html` in a browser.
+```bash
+python3 -m http.server 8000
+```
+Then open http://localhost:8000.
 
 ## Deploy (Vercel)
-1. Push this folder to a GitHub repo (e.g. `josemneves/Ideas-Lab`).
-2. On vercel.com, choose **Add New → Project**, import the repo and deploy. No settings are needed.
-3. Under **Settings → Domains**, add `yourname.com`.
-4. Give each project its own subdomain (e.g. `idea1.yourname.com`) from that project's Vercel settings.
+1. On vercel.com, choose **Add New → Project**, import this repo and deploy. No settings are needed.
+2. Optional: under **Settings → Domains**, add your own domain.
+
+## Security and privacy
+- `vercel.json` sets security headers, including a strict Content Security Policy: only this site's own scripts and styles can run, and the page can't be embedded in other sites.
+- Every value from `projects.js` is escaped before it reaches the page, and links must start with `http(s)://`, `mailto:` or be relative.
+- No third-party requests: system fonts only, no analytics, no cookies, no forms. That's why there is no cookie banner or privacy policy to accept.

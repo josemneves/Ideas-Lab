@@ -1,73 +1,57 @@
 (function () {
   const site = window.SITE || {};
-  const projects = (window.PROJECTS || []).slice().sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  const all = window.PROJECTS || [];
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  // Only allow http(s), mailto and relative links, so a typo can never become a javascript: URL.
+  const safeUrl = (u) => (/^(https?:\/\/|mailto:|[\w./-]+$)/i.test(u || "") ? esc(u) : "");
+  const ext = 'target="_blank" rel="noopener noreferrer"';
 
-  document.title = site.name ? `${site.name} · Projects` : "Projects";
+  function fmtDate(d) {
+    const dt = new Date((d || "") + "T00:00:00");
+    return isNaN(dt) ? "" : dt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  }
+
   $("name").textContent = site.name || "";
-  $("tagline").textContent = site.tagline || "";
   $("intro").textContent = site.intro || "";
-  $("year").textContent = new Date().getFullYear();
 
   const labels = { x: "X", github: "GitHub", linkedin: "LinkedIn", email: "Email" };
   $("social").innerHTML = Object.entries(site.links || {})
-    .filter(([, url]) => url)
-    .map(([k, url]) => `<a href="${esc(url)}" target="_blank" rel="noopener">${labels[k] || esc(k)}</a>`)
+    .filter(([, url]) => safeUrl(url))
+    .map(([k, url]) => `<a href="${safeUrl(url)}" ${k === "email" ? "" : ext}>${labels[k] || esc(k)}</a>`)
     .join("");
 
-  const order = ["all", "live", "building", "prototype", "paused"];
-  const present = new Set(projects.map((p) => p.status));
-  const filters = order.filter((s) => s === "all" || present.has(s));
-  let active = "all";
-
-  function fmtDate(d) {
-    if (!d) return "";
-    const dt = new Date(d + "T00:00:00");
-    return isNaN(dt) ? esc(d) : dt.toLocaleDateString("en-GB", { month: "short", year: "numeric" });
-  }
-
-  function card(p) {
-    const initials = (p.name || "?").split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase();
-    const thumb = p.image
-      ? `<img src="${esc(p.image)}" alt="${esc(p.name)} screenshot" loading="lazy">`
-      : `<span class="ph">${esc(initials)}</span>`;
-    const more = p.problem || p.learnt
-      ? `<details><summary>Problem &amp; learnings</summary>
-           ${p.problem ? `<p><strong>Problem.</strong> ${esc(p.problem)}</p>` : ""}
-           ${p.learnt ? `<p><strong>Learnt.</strong> ${esc(p.learnt)}</p>` : ""}
-         </details>`
-      : "";
-    const tags = (p.tags || []).length ? `<div class="tags">${p.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>` : "";
-    const live = p.live
-      ? `<a class="btn primary" href="${esc(p.live)}" target="_blank" rel="noopener">Try it ↗</a>`
-      : `<span class="btn disabled">Demo soon</span>`;
-    const repo = p.repo ? `<a class="btn" href="${esc(p.repo)}" target="_blank" rel="noopener">GitHub</a>` : "";
-    return `<article class="card">
-      <div class="thumb">${thumb}</div>
-      <div class="body">
-        <div class="meta"><span class="status ${esc(p.status)}">${esc(p.status)}</span><span class="mono">${fmtDate(p.date)}</span></div>
-        <h3>${esc(p.name)}</h3>
+  function row(p, i) {
+    const live = safeUrl(p.live), repo = safeUrl(p.repo), img = safeUrl(p.image);
+    const title = live ? `<a href="${live}" ${ext}>${esc(p.name)}</a>` : esc(p.name);
+    const links = [
+      live && `<a href="${live}" ${ext}>Visit site<span aria-hidden="true"> ↗</span></a>`,
+      repo && `<a href="${repo}" ${ext}>Source code<span aria-hidden="true"> ↗</span></a>`
+    ].filter(Boolean).join("");
+    return `<li class="row">
+      <span class="num" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span>
+      <div>
+        <h3>${title}</h3>
         <p class="pitch">${esc(p.pitch)}</p>
-        ${more}${tags}
-        <div class="actions">${live}${repo}</div>
+        ${p.problem ? `<p class="detail"><strong>Why.</strong> ${esc(p.problem)}</p>` : ""}
+        ${p.learnt ? `<p class="detail"><strong>Learnt.</strong> ${esc(p.learnt)}</p>` : ""}
+        ${img ? `<figure class="shot"><img src="${img}" alt="${esc(p.imageAlt || p.name + " screenshot")}" loading="lazy"></figure>` : ""}
+        ${links ? `<p class="links">${links}</p>` : ""}
       </div>
-    </article>`;
+      <dl class="meta">
+        <dt>Status</dt><dd class="status ${esc(p.status)}">${esc((p.status || "").replace(/^./, (c) => c.toUpperCase()))}</dd>
+        <dt>Started</dt><dd>${fmtDate(p.date)}</dd>
+        ${(p.tags || []).length ? `<dt>Topics</dt><dd>${p.tags.map(esc).join(", ")}</dd>` : ""}
+      </dl>
+    </li>`;
   }
 
-  function render() {
-    $("filters").innerHTML = filters.length > 2
-      ? filters.map((f) => `<button role="tab" data-f="${f}" aria-selected="${f === active}">${f[0].toUpperCase() + f.slice(1)}</button>`).join("")
-      : "";
-    const list = projects.filter((p) => active === "all" || p.status === active);
-    $("count").textContent = `(${projects.length})`;
-    $("grid").innerHTML = list.length ? list.map(card).join("") : `<p class="empty">Nothing here yet — check back soon.</p>`;
-  }
+  const numbered = all.map((p, i) => ({ p, i })).reverse();
+  $("count").textContent = `${all.length} ${all.length === 1 ? "project" : "projects"}`;
+  $("index").innerHTML = numbered.length
+    ? numbered.map(({ p, i }) => row(p, i)).join("")
+    : `<li class="empty">Nothing here yet. Check back soon.</li>`;
 
-  $("filters").addEventListener("click", (e) => {
-    const f = e.target.closest("button")?.dataset.f;
-    if (f) { active = f; render(); }
-  });
-
-  render();
+  const latest = all.map((p) => p.date || "").sort().pop();
+  $("updated").textContent = latest ? `Last updated ${fmtDate(latest)}` : "";
 })();
