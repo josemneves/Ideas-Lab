@@ -25,6 +25,7 @@ Then open http://localhost:8000.
 ## Logo
 The symbol is a lowercase "i": a red square dot (the idea) over an ink stem (the work). In the header it is the first letter of "ideas lab".
 - `favicon.svg`: browser tab icon
-- `logo.svg` / `logo.png` (800×800): square version for profile pictures (X, Linktree)
+- `logo.svg` / `logo.png` (800×800): square version for profile pictures
+- `logo-thumb.svg` / `logo-thumb.png` (800×800): tighter crop for small thumbnails (Linktree buttons)
 
 Colours: red `#b3341c`, ink `#161513`, paper `#f4f2ee`.
