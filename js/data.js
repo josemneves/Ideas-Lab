@@ -71,7 +71,7 @@ window.PROJECTS = [
     live: '',
     repo: '',
     image: { dark: 'images/peptide-atlas.jpg' },
-    imageAlt: 'Peptide Atlas heart and blood view: a 3D heart in the centre, body systems listed on the left and the compounds that act on the heart listed on the right',
+    imageAlt: 'Peptide Atlas brain and sleep view: a 3D brain in the centre, body systems listed on the left and the compounds that act on the brain listed on the right',
     tags: ['Health', '3D', 'Research']
   }
 ];
