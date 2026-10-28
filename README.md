@@ -16,17 +16,32 @@ e abre http://localhost:8080.
 
 ## Adicionar um projeto (site)
 
-1. Tira um screenshot do site (1280×800 fica bem) e guarda-o em `images/`.
+1. Tira screenshots do site (1440×900 fica bem) e guarda-os em `images/`: um em modo claro e outro em modo escuro,
+   se o projeto tiver os dois.
 2. Em `js/data.js`, copia um objeto de `PROJECTS` e cola-o no fim da lista.
 3. Preenche `handle`, `name`, `pitch`, `problem`, `status`, `date`, `live`, `image`, etc.
+   `image: { light: '…', dark: '…' }` faz o preview mudar com o modo claro/escuro de quem visita.
 
+O último projeto da lista aparece em destaque no topo da página (muda com `SITE.featured`).
 Os espaços vazios da grelha são preenchidos com cartões "CLASSIFIED" até completar a linha.
 
 ## O terminal
 
-O terminal no canto inferior esquerdo aceita comandos. Os comandos que funcionam são
-`help`, `ls`, `cd`, `open`, `clear`, `date`, `whoami` e `history`. Qualquer outra coisa responde com
+O terminal no canto inferior esquerdo aceita comandos. Qualquer outra coisa responde com
 `unknown command: <o que foi escrito>`.
+
+| Comando | O que faz |
+|---|---|
+| `ls` | lista as secções; `ls projects` lista os projetos com o número de cada um |
+| `cd <sítio>` | vai para uma página: `cd projects`, `cd about`, `cd recovery-lens`, `cd 2`, `cd ..` |
+| `open <projeto>` | abre o site do projeto num separador novo: `open recovery lens`, `open 1`; sem nome lista o que se pode abrir |
+| `help [comando]` | lista os comandos, ou mostra exemplos de um (`help open`) |
+| `clear` | limpa o terminal (ou Ctrl+L) |
+| `history` | mostra os comandos já escritos (↑ ↓ repetem-nos) |
+| `date` | data e hora |
+| `whoami` | quem és no sistema |
+
+Tab completa comandos e nomes de projetos.
 
 Para escrever não é preciso clicar: basta começar a escrever em qualquer parte da página.
 

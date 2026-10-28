@@ -1,4 +1,4 @@
-/* Router + views. Hash routes (#/projects/rejuice) so the site works
+/* Router + views. Hash routes (#/projects/peptide-atlas) so the site works
    straight from the file system and on any static host (GitHub Pages, Vercel). */
 (function () {
   var SITE = window.SITE, PROJECTS = window.PROJECTS, Art = window.Art, Term = window.Terminal;
@@ -10,7 +10,7 @@
 
   var STATUS = { live: 'Live', building: 'Building', prototype: 'Prototype', paused: 'Paused' };
   var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  var BGS = ['mid', 'light', 'dark', 'light', 'dark', 'mid'];
+  var BGS = ['mid', 'light', 'dark'];
 
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function safeUrl(u) { return /^(https?:|mailto:)/i.test(u || '') ? u : ''; }
@@ -18,37 +18,31 @@
   function code(i, p) { return 'IDEA-' + num(i) + (p && p.date ? '-' + p.date.slice(0, 7).replace('-', '') : ''); }
   function month(d) { var m = /^(\d{4})-(\d{2})/.exec(d || ''); return m ? MONTHS[+m[2] - 1] + ' ' + m[1] : '—'; }
   function status(p) { return STATUS[p.status] || p.status || ''; }
+  function lines(name) { return esc(name).split(' ').join('<br>'); }
+  function featured() { return byHandle[SITE.featured] || PROJECTS[PROJECTS.length - 1]; }
 
   var ARROW_DOWN = '<svg width="12" height="16" viewBox="0 0 12 16" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M6 1v13.5M1 9.5l5 5 5-5"/></svg>';
 
   /* ---------------------------------------------------------------- tiles */
 
-  function tile(p, mode) {
-    var i = p.index, bg = BGS[i % BGS.length];
-    var archive = mode === 'archive';
-    var info = archive
-      ? '<div class="tile__code">' + code(i, p) + '</div>'
-      : '<div class="tile__label"><span>' + num(i) + ' — ' + esc(p.name) + '</span><span>' + status(p) + ' · ' + month(p.date) + '</span></div>' +
-        '<div class="tile__cta">View project<span class="arr">→</span></div>';
-    return '<a class="tile tile--' + bg + (archive ? ' tile--archive' : '') + '" href="#/projects/' + p.handle + '" title="' + esc(p.name) + '">' +
-      '<div class="tile__art">' + Art.shot(p) + '</div>' + info + '</a>';
+  function tile(p) {
+    return '<a class="tile tile--' + BGS[p.index % BGS.length] + '" href="#/projects/' + p.handle + '" title="' + esc(p.name) + '">' +
+      '<div class="tile__art">' + Art.shot(p) + '</div>' +
+      '<div class="tile__label"><span>' + num(p.index) + ' — ' + esc(p.name) + '</span><span>' + status(p) + ' · ' + month(p.date) + '</span></div>' +
+      '<div class="tile__cta">View project<span class="arr">→</span></div></a>';
   }
 
-  function classifiedTile(i, mode) {
-    var archive = mode === 'archive';
-    var info = archive
-      ? '<div class="tile__code">' + code(i) + ' — sealed</div>'
-      : '<div class="tile__label"><span>' + num(i) + ' — Classified</span><span>Clearance required</span></div>';
-    return '<button class="tile tile--dark tile--classified' + (archive ? ' tile--archive' : '') + '" data-action="classified" data-idx="' + num(i) + '" title="Classified">' +
-      '<div class="tile__art">' + Art.classified(i + 3) + '</div>' + info + '</button>';
+  function classifiedTile(i) {
+    return '<button class="tile tile--dark tile--classified" data-action="classified" data-idx="' + num(i) + '" title="Classified">' +
+      '<div class="tile__art">' + Art.classified(i + 3) + '</div>' +
+      '<div class="tile__label"><span>' + num(i) + ' — Classified</span><span>Clearance required</span></div></button>';
   }
 
   // projects first, then "classified" slots until the last row is full (min. `min` tiles)
-  function grid(list, mode, min) {
-    var html = list.map(function (p) { return tile(p, mode); }).join('');
+  function grid(list, min) {
+    var html = list.map(tile).join('');
     var total = Math.max(min || 0, Math.ceil(list.length / 3) * 3);
-    var next = PROJECTS.length;
-    for (var k = list.length; k < total; k++) html += classifiedTile(next++, mode);
+    for (var k = list.length, next = PROJECTS.length; k < total; k++) html += classifiedTile(next++);
     return '<section class="grid" id="index">' + html + '</section>';
   }
 
@@ -60,17 +54,24 @@
   /* ---------------------------------------------------------------- views */
 
   function viewLanding() {
-    var name = esc(SITE.name).split(' ');
+    var f = featured();
     return '<section class="hero">' +
-      '<div class="hero__art">' + Art.hero('Ideas, shipped.') + '</div>' +
-      '<div class="hero__tag mono">' + esc(SITE.tagline) + ' — ' + num(PROJECTS.length - 1) + ' projects</div>' +
-      '<div class="hero__type"><span class="hero__season">S. 2026</span><h1 class="hero__title">' + name.join('<br>') + '</h1></div>' +
-      '<button class="hero__shop" data-action="scroll">PROJECTS ' + ARROW_DOWN + '</button>' +
-      '</section>' + grid(PROJECTS, 'index', 3) + footer();
-  }
-
-  function viewArchive() {
-    return grid(PROJECTS, 'archive', 6) + footer();
+      '<div class="hero__media">' + Art.picture(f, '', false) + '</div>' +
+      '<div class="hero__veil"></div>' +
+      '<div class="hero__tag mono"><span>' + esc(SITE.name) + ' — ' + esc(SITE.tagline) + '</span><span>' + num(PROJECTS.length - 1) + ' projects</span></div>' +
+      '<div class="hero__type">' +
+        '<span class="hero__season">S. 2026</span>' +
+        '<span class="hero__kicker mono">Latest — ' + num(f.index) + ' · ' + status(f) + '</span>' +
+        '<h1 class="hero__title">' + lines(f.name) + '</h1>' +
+      '</div>' +
+      '<div class="hero__side">' +
+        '<p class="hero__pitch">' + esc(f.pitch) + '</p>' +
+        '<div class="hero__actions">' +
+          '<a class="hero__shop" href="#/projects/' + f.handle + '">View project →</a>' +
+          '<button class="hero__shop" data-action="scroll">All projects ' + ARROW_DOWN + '</button>' +
+        '</div>' +
+      '</div>' +
+      '</section>' + grid(PROJECTS, 3) + footer();
   }
 
   function viewProject(p) {
@@ -78,16 +79,16 @@
     var others = PROJECTS.filter(function (x) { return x !== p; });
     var specs = [
       ['Status', status(p)],
-      ['Launched', month(p.date)],
+      ['Started', month(p.date)],
       ['Tags', (p.tags || []).join(' · ') || '—'],
       ['URL', live ? Art.host(live) : 'Not online yet']
     ].map(function (r) { return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('');
-    var bg = BGS[p.index % BGS.length];
+    var full = Art.picture(p, '');
 
     return '<article class="pdp">' +
       '<div class="pdp__media">' +
-        '<div class="pdp__img tile--' + bg + '">' + Art.shot(p) + '</div>' +
-        (p.image ? '<div class="pdp__img pdp__img--full"><img src="' + esc(p.image) + '" alt="" loading="lazy"></div>' : '') +
+        '<div class="pdp__img tile--' + BGS[p.index % BGS.length] + '">' + Art.shot(p) + '</div>' +
+        (full ? '<div class="pdp__img pdp__img--full">' + full + '</div>' : '') +
       '</div>' +
       '<aside class="pdp__info">' +
         '<div class="pdp__top mono"><a href="#/projects">← Projects</a><span>' + code(p.index, p) + '</span></div>' +
@@ -106,24 +107,56 @@
       '</aside>' +
       '</article>' +
       '<div class="section-head mono"><span>More ideas</span><span>' + PROJECTS.length + ' total</span></div>' +
-      grid(others, 'index', 3) + footer();
+      grid(others, 3) + footer();
   }
 
   function viewAbout() {
-    var L = SITE.links, rows = [['X', L.x], ['GitHub', L.github], ['LinkedIn', L.linkedin], ['Email', L.email]]
+    var L = SITE.links;
+    var links = [['X', L.x], ['GitHub', L.github], ['LinkedIn', L.linkedin], ['Email', L.email]]
       .filter(function (r) { return safeUrl(r[1]); })
       .map(function (r) {
         var label = r[1].replace(/^mailto:/, '').replace(/^https?:\/\/(www\.)?/, '');
         return '<div><dt>' + r[0] + '</dt><dd><a href="' + esc(r[1]) + '" target="_blank" rel="noopener">' + esc(label) + ' ↗</a></dd></div>';
       }).join('');
+
+    var building = PROJECTS.filter(function (p) { return p.status === 'building' || p.status === 'prototype'; });
+    var shipped = PROJECTS.filter(function (p) { return p.status === 'live'; });
+    var now = building.map(function (p) {
+      return '<li><span class="mono status status--' + esc(p.status) + '">' + status(p) + '</span>' +
+        '<a href="#/projects/' + p.handle + '">' + esc(p.name) + '</a><span>' + esc(p.pitch) + '</span></li>';
+    }).join('') + (shipped.length
+      ? '<li><span class="mono status status--live">Latest live</span><a href="#/projects/' + shipped[shipped.length - 1].handle + '">' +
+        esc(shipped[shipped.length - 1].name) + '</a><span>' + esc(shipped[shipped.length - 1].pitch) + '</span></li>'
+      : '');
+
+    var principles = (SITE.principles || []).map(function (r, i) {
+      return '<li><span class="mono">' + num(i) + '</span><div><b>' + esc(r[0]) + '</b><span>' + esc(r[1]) + '</span></div></li>';
+    }).join('');
+
+    var index = PROJECTS.map(function (p) {
+      return '<a class="irow" href="#/projects/' + p.handle + '">' +
+        '<span class="mono irow__num">' + num(p.index) + '</span>' +
+        '<span class="irow__name">' + esc(p.name) + '</span>' +
+        '<span class="irow__pitch">' + esc(p.pitch) + '</span>' +
+        '<span class="mono status status--' + esc(p.status) + '">' + status(p) + '</span>' +
+        '<span class="mono irow__date">' + month(p.date) + '</span>' +
+        '<span class="irow__arr">→</span></a>';
+    }).join('');
+
     return '<section class="about">' +
-      '<header class="about__head"><h1>About</h1><span class="mono">' + num(PROJECTS.length - 1) + ' projects shipped</span></header>' +
-      '<div class="about__body">' +
-        '<p class="about__name">' + esc(SITE.name) + '</p>' +
+      '<header class="about__head"><h1>About</h1><span class="mono">' + num(PROJECTS.length - 1) + ' projects · since ' + month(PROJECTS[0].date) + '</span></header>' +
+      '<div class="about__hero">' +
+        '<p class="about__name">' + lines(SITE.name) + '</p>' +
         '<p class="about__intro">' + esc(SITE.intro) + '</p>' +
-        '<a class="mono" href="#/projects">See the projects →</a>' +
       '</div>' +
-      '<div class="about__links"><span class="pdp__label mono">Elsewhere</span><dl class="specs">' + rows + '</dl></div>' +
+      '<div class="about__cols">' +
+        '<div class="about__col"><span class="pdp__label mono">Now</span><ul class="about__now">' + now + '</ul></div>' +
+        '<div class="about__col"><span class="pdp__label mono">How I build</span><ol class="about__principles">' + principles + '</ol></div>' +
+        '<div class="about__col"><span class="pdp__label mono">Elsewhere</span><dl class="specs">' + links + '</dl></div>' +
+      '</div>' +
+      '<div class="section-head mono"><span>Index</span><span>' + PROJECTS.length + ' total</span></div>' +
+      '<div class="about__index">' + index + '</div>' +
+      '<p class="about__hint mono">Some pages are not linked from anywhere. The terminal knows the way.</p>' +
       '</section>';
   }
 
@@ -147,9 +180,8 @@
     }
     if ((m = path.match(/^\/projects\/([\w-]+)$/)) && byHandle[m[1]]) {
       var p = byHandle[m[1]];
-      return { html: function () { return viewProject(p); }, nav: 'projects', term: '~/projects/' + p.handle, title: p.name, project: p };
+      return { html: function () { return viewProject(p); }, nav: 'projects', term: '~/projects/' + p.handle, title: p.name };
     }
-    if (path === '/archive') return { html: viewArchive, nav: 'archive', term: '~/archive', title: 'Archive' };
     if (path === '/about') return { html: viewAbout, nav: 'about', term: '~/about', title: 'About' };
     return { html: function () { return view404(path); }, nav: null, term: '~', title: 'Not found', missing: true };
   }
@@ -182,20 +214,31 @@
     updatePill();
   }
 
-  function go(path) { location.hash = '#' + path; }
+  function go(path) { if (path !== currentPath()) location.hash = '#' + path; }
 
   /* ------------------------------------------------ terminal: ls / cd / open */
 
   function segments(termPath) { return termPath.replace(/^~\/?/, '').split('/').filter(Boolean); }
+  function squash(s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, ''); }
+
+  // "recovery-lens", "Recovery Lens", "recoverylens", "1", "01" -> project
+  function findProject(q) {
+    var k = squash(q);
+    if (!k) return null;
+    if (/^\d+$/.test(k)) return PROJECTS[+k - 1] || null;
+    for (var i = 0; i < PROJECTS.length; i++) {
+      if (squash(PROJECTS[i].handle) === k || squash(PROJECTS[i].name) === k) return PROJECTS[i];
+    }
+    return null;
+  }
 
   function children(parts) {
-    if (!parts.length) return ['projects', 'archive', 'about'];
+    if (!parts.length) return ['projects', 'about'];
     if (parts.length === 1 && parts[0] === 'projects') return PROJECTS.map(function (p) { return p.handle; });
     return null;
   }
 
-  // "../archive", "~/projects/rejuice", "rejuice"... -> route
-  // relative paths that don't resolve are retried from ~ (so "cd archive" works anywhere)
+  // "..", "~/projects/recovery-lens", "about"... -> route (relative paths fall back to ~)
   function routeFor(arg) {
     return resolvePath(arg, /^[~\/]/.test(arg) ? [] : segments(Term.path)) || resolvePath(arg, []);
   }
@@ -207,52 +250,86 @@
       if (seg === '..') parts.pop(); else parts.push(seg.toLowerCase());
     });
     if (!parts.length) return '/';
-    if (parts.length === 1 && /^(projects|archive|about)$/.test(parts[0])) return '/' + parts[0];
+    if (parts.length === 1 && /^(projects|about)$/.test(parts[0])) return '/' + parts[0];
     var h = parts[parts.length - 1];
     if (byHandle[h] && (parts.length === 1 || (parts.length === 2 && parts[0] === 'projects'))) return '/projects/' + h;
     return null;
   }
 
+  function listProjects() {
+    PROJECTS.forEach(function (p) {
+      var where = safeUrl(p.live) ? Art.host(p.live) : 'not online yet';
+      Term.print('  ' + num(p.index) + '  ' + p.handle.padEnd(16) + status(p).toLowerCase().padEnd(10) + where, 'tl--dim');
+    });
+  }
+
+  Term.helpFooter = function () {
+    Term.print('projects: ' + PROJECTS.map(function (p) { return p.handle; }).join(', '), 'tl--dim');
+    Term.print('tip: Tab completes a command, ↑ ↓ repeat earlier ones', 'tl--dim');
+  };
+
   Term.register('ls', {
-    usage: 'ls [dir]', desc: 'list directory contents',
+    usage: 'ls', desc: 'list the sections, or the projects inside projects/',
+    details: ['ls             what is in the current folder', 'ls projects    every project, with its number'],
     run: function (args) {
       var termPath = Term.path;
-      if (args[0]) {
-        var route = routeFor(args[0]);
-        if (!route) return Term.print('ls: cannot access \'' + args[0] + '\': no such directory', 'tl--err');
+      if (args.length) {
+        var route = routeFor(args.join(' '));
+        if (!route) return Term.print('ls: no such section: ' + args.join(' ') + '  (try: ls projects)', 'tl--err');
         termPath = resolve(route).term;
       }
       var parts = segments(termPath), list = children(parts);
       if (!list) {
         var p = byHandle[parts[parts.length - 1]];
-        return Term.print(p ? p.name + ' — ' + status(p) : '(empty)', 'tl--dim');
+        return Term.print(p ? p.name + ' — ' + status(p) + '. Type "open" to visit it.' : '(empty)', 'tl--dim');
       }
-      if (!parts.length) return Term.print(list.map(function (d) { return d === 'about' ? d : d + '/'; }).join('  '));
-      list.forEach(function (h) { Term.print(h, 'tl--dim'); });
+      if (!parts.length) return Term.print('projects/  about');
+      listProjects();
     }
   });
 
   Term.register('cd', {
-    usage: 'cd <dir>', desc: 'change directory',
-    complete: function () { return (children(segments(Term.path)) || []).concat(['..']); },
+    usage: 'cd <place>', desc: 'go to a page: a section or a project',
+    details: ['cd projects       the project index', 'cd about          the about page',
+      'cd recovery-lens  a project page (names and numbers work too: cd 2)', 'cd ..             one level up        cd ~   home'],
+    complete: function () { return ['projects', 'about', '..'].concat(PROJECTS.map(function (p) { return p.handle; })); },
     run: function (args) {
-      var route = routeFor(args[0] || '~');
-      if (!route) return Term.print('cd: no such directory: ' + args[0], 'tl--err');
-      if (route !== currentPath()) go(route);
+      var q = args.join(' ');
+      var route = routeFor(q || '~');
+      var p = !route && findProject(q);
+      if (p) route = '/projects/' + p.handle;
+      if (!route) return Term.print('cd: no such page: ' + q + '  (try: cd projects, cd about)', 'tl--err');
+      go(route);
     }
   });
 
   Term.register('open', {
-    usage: 'open <name>', desc: 'open a project\'s live site',
-    complete: function () { return PROJECTS.map(function (p) { return p.handle; }); },
+    usage: 'open <project>', desc: 'open a project\'s live website in a new tab',
+    details: ['open recovery-lens   by name (spaces and capitals are fine)', 'open 1               by number',
+      'open                 inside a project page: opens that project', 'open projects        list what can be opened'],
+    complete: function () { return PROJECTS.map(function (p) { return p.handle; }).concat(['projects']); },
     run: function (args) {
-      var h = (args[0] || segments(Term.path)[1] || '').toLowerCase();
-      var p = byHandle[h];
-      if (!h) return Term.print('usage: open <name>', 'tl--err');
-      if (!p) return Term.print('open: no such project: ' + args[0], 'tl--err');
+      var q = args.join(' ');
+      var here = segments(Term.path)[1];
+      if (!q && here) q = here;
+      if (!q || /^(projects|list)$/i.test(q)) {
+        Term.print('openable projects:');
+        listProjects();
+        Term.print('usage: open <name or number>, e.g. open ' + PROJECTS[0].handle, 'tl--dim');
+        if (/^projects$/i.test(q)) go('/projects');
+        return;
+      }
+      if (/^about$/i.test(q)) return go('/about');
+      var p = findProject(q);
+      if (!p) return Term.print('open: no project called "' + q + '". Type "open" to see the list.', 'tl--err');
       var url = safeUrl(p.live);
-      if (!url) return Term.print('open: ' + p.handle + ' is not online yet', 'tl--err');
-      Term.log('opening ' + Art.host(url));
+      if (!url) {
+        Term.print(p.name + ' is not online yet. Showing its page instead.', 'tl--err');
+        return go('/projects/' + p.handle);
+      }
+      // a real link too, in case the browser blocks the new tab
+      Term.printHTML('<span class="tl__ts">[' + new Date().toTimeString().slice(0, 8) + ']</span> opening ' +
+        '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(Art.host(url)) + ' ↗</a>');
       window.open(url, '_blank', 'noopener');
     }
   });

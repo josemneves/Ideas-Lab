@@ -131,22 +131,38 @@ window.Terminal = (function () {
     return null;
   }
 
-  // core commands; app.js adds ls / cd
+  // core commands; app.js adds ls / cd / open (and T.helpFooter)
+  var ORDER = ['ls', 'cd', 'open', 'help', 'clear', 'history', 'date', 'whoami'];
   T.register('help', {
-    usage: 'help', desc: 'list available commands',
-    run: function () {
-      T.print('available commands:');
-      Object.keys(T.commands).sort().forEach(function (k) {
-        var c = T.commands[k];
-        T.print('  ' + (c.usage || k).padEnd(12) + c.desc, 'tl--dim');
+    usage: 'help [command]', desc: 'this list, or examples for one command',
+    details: ['help        every command', 'help open   examples for "open"'],
+    complete: function () { return Object.keys(T.commands); },
+    run: function (args) {
+      var name = (args[0] || '').toLowerCase(), c = T.commands[name];
+      if (name && !c) return T.print('help: no command called "' + name + '"', 'tl--err');
+      if (c) {
+        T.print((c.usage || name) + ' — ' + c.desc);
+        (c.details || []).forEach(function (d) { T.print('  ' + d, 'tl--dim'); });
+        return;
+      }
+      T.print('commands:');
+      var keys = Object.keys(T.commands).sort(function (a, b) {
+        var ia = ORDER.indexOf(a), ib = ORDER.indexOf(b);
+        return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
       });
+      keys.forEach(function (k) {
+        var cmd = T.commands[k];
+        T.print('  ' + (cmd.usage || k).padEnd(16) + cmd.desc, 'tl--dim');
+      });
+      if (T.helpFooter) T.helpFooter();
+      T.print('type "help <command>" for examples', 'tl--dim');
     }
   });
-  T.register('clear', { usage: 'clear', desc: 'clear terminal output', run: function () { T.clear(); } });
-  T.register('date', { usage: 'date', desc: 'print system time', run: function () { T.print(stamp()); } });
-  T.register('whoami', { usage: 'whoami', desc: 'print current user', run: function () { T.print('guest (uid=1001, clearance=NONE)'); } });
+  T.register('clear', { usage: 'clear', desc: 'empty the terminal (or press Ctrl+L)', run: function () { T.clear(); } });
+  T.register('date', { usage: 'date', desc: 'show the current date and time', run: function () { T.print(stamp()); } });
+  T.register('whoami', { usage: 'whoami', desc: 'show who you are logged in as', run: function () { T.print('guest (uid=1001, clearance=NONE)'); } });
   T.register('history', {
-    usage: 'history', desc: 'show command history',
+    usage: 'history', desc: 'list the commands you have typed',
     run: function () {
       T.history.forEach(function (h, i) { T.print(String(i + 1).padStart(4) + '  ' + h, 'tl--dim'); });
     }
