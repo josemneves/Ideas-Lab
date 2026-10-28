@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- Gerador de hash para os easter eggs. Abre este ficheiro no browser. -->
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Easter egg hash</title>
+  <link rel="stylesheet" href="hash.css">
+</head>
+<body>
+  <div class="wrap">
+    <h1>Gerador de easter eggs</h1>
+    <p>Escreve a palavra secreta. A página gera a linha para colar em <code>js/easter-eggs.js</code>.</p>
+
+    <label for="word">Palavra secreta</label>
+    <input id="word" autocomplete="off" spellcheck="false" placeholder="ex.: ontology">
+
+    <label>Normalizada (é isto que é comparado)</label>
+    <output id="norm"></output>
+
+    <label>Linha para js/easter-eggs.js</label>
+    <output id="line"></output>
+    <button id="copy" type="button">Copiar linha</button>
+
+    <label>Passos</label>
+    <ol>
+      <li>Copia a linha acima para a lista em <code>js/easter-eggs.js</code>.</li>
+      <li>Duplica <code>secret/exemplo.html</code> com o nome sugerido (<span id="file">secret/…html</span>) e edita o conteúdo.</li>
+      <li>Escreve a palavra no terminal do site para testar.</li>
+    </ol>
+  </div>
+
+  <script src="../js/secret.js"></script>
+  <script src="hash.js"></script>
+</body>
+</html>
